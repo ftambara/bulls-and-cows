@@ -4,6 +4,9 @@ This module contains the main game logic
 """
 
 class Player(object):
+    """
+    Abstract class. Instance subclasses HumanPlayer or ComputerPlayer instead.
+    """
     def __init__(self, number):
         pass
     def play_turn(self):
@@ -16,6 +19,9 @@ class HumanPlayer(object):
 class ComputerPlayer(object):
     def play_turn(self):
         pass
+    """
+    Plus a few private methods that call the appropiate AI functions.
+    """
 
 class Settings(object):
     """
@@ -30,8 +36,8 @@ class Settings(object):
 
 class Game(object):
     """
-    Keeps track of number of players. Calls each round. 
-    Tracks score. Detects end game condition. Announces winner.
+    Keep track of number of players. Calls each round. 
+    Track score. Detects end game condition. Announces winner.
     """
     def __init__(self, players: Player, settings: Settings):
         self._players = {player:0 for player in players}
@@ -42,7 +48,7 @@ class Game(object):
     def start_game(self):
         """
         
-        returns dict of players and their final scores
+        Return dict of players and their final scores.
         """
         while self._game_done is False:
             self.play_round()
@@ -52,7 +58,7 @@ class Game(object):
     def _play_round(self):
         """
         Make each player play turns until the round is done.
-        Updates players dict with obtained scores
+        Update players dict with obtained scores.
         """
 
         keep_going = [p for p,s in self._players 
@@ -62,20 +68,23 @@ class Game(object):
 
     def _play_turn(self, player: Player):
         """
-        Makes the given player play a single turn
-        Returns a tuple (num_bulls, num_cows)
+        Make the player play a single turn.
+        Return a tuple (num_bulls, num_cows).
         """
         pass
 
 
 class HiddenNumber(object):
-    def __init__(self, num_digits, digits):
+    def __init__(self, num_digits: int, possible_digits):
         """
-        Generates a random number
+        Generate a random number according to the given constraints.
+        num_digits: length of the hidden number.
+        possible_digits: an iterable object.
         """
+        list.append()
         pass
     def get_matches(self, number):
         """
-        Returns a tuple (number of bulls, number of cows)
+        Return a tuple (number of bulls, number of cows)
         """
         pass
