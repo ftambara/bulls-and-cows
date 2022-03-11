@@ -4,6 +4,8 @@ Takes care of user interaction and provides the corresponding feedback.
 """
 
 """
+Module ideas
+
 interface.py
     Contains the tools in charge of displaying the game info. to the players.
 
@@ -12,10 +14,6 @@ settings.py
 
 ai.py
     Contains the logic of the machine player.
-
-game.py
-    main game logic
-
 """
 
 __author__ = "ftambara"

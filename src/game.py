@@ -39,7 +39,7 @@ class Game(object):
     Keep track of number of players. Calls each round. 
     Track score. Detects end game condition. Announces winner.
     """
-    def __init__(self, players: Player, settings: Settings):
+    def __init__(self, players: list[Player], settings: Settings):
         self._players = {player:0 for player in players}
         self._settings = settings
         self._game_done = False
@@ -47,13 +47,13 @@ class Game(object):
         
     def start_game(self):
         """
-        
+        Execute a full game.
         Return dict of players and their final scores.
         """
         while self._game_done is False:
-            self.play_round()
+            self._play_round()
         
-        pass
+        return self._players
 
     def _play_round(self):
         """
@@ -64,7 +64,9 @@ class Game(object):
         keep_going = [p for p,s in self._players 
                         if s < self._settings.max_points]
 
-        pass
+        if self._settings.collate is True:
+            for player in keep_going:
+                ...
 
     def _play_turn(self, player: Player):
         """
