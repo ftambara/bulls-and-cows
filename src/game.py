@@ -71,6 +71,14 @@ class Game(object):
         """
         while self._game_done is False:
             self._play_round()
+            self._game_done = True
+            keep_going = 0
+            for s in self._scores:
+                if s < self._settings.max_points:
+                    keep_going += 1
+                    if keep_going == 2:
+                        # At least 2 people aren't done yet, game is not done
+                        self._game_done = False
         
         return self._players
 
@@ -106,14 +114,15 @@ class Game(object):
                         # Hidden number discovered
                         del keep_going[player]
                         score = self._get_round_score(turn_num)
+                        self._scores[player] += score
                         ...    # TODO Visual feedback: You guessed right
+                        ... # TODO Visual feedback: Show score
                     elif turn_num+1 > self._settings.max_turns:
                         # Time is up
                         score = self._get_round_score(turn_num, guessed=False)
-                        ...    # TODO Visual feedback: time is up
-                    
-                    self._scores[player] += score
-                    ... # TODO Visual feedback: Show score
+                        self._scores[player] += score
+                        ...    # TODO Visual feedback: time is up                    
+                        ... # TODO Visual feedback: Show score
 
                 turn_num += 1
                 if turn_num > self._settings.max_turns:
@@ -138,9 +147,9 @@ class Game(object):
                         score = self._get_round_score(turn_num, guessed=False)
                         ...    # TODO Visual feedback: time is up
                     
-                    self._scores[player] += score
-                    ... # TODO Visual feedback: Show score
                     turn_num += 1
+                self._scores[player] += score
+                ... # TODO Visual feedback: Show score
 
     def _get_round_score(self, num_turns, guessed=True):
         # TODO move it to settings/game mode object
