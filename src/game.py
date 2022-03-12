@@ -3,44 +3,7 @@
 This module contains the main game logic
 """
 
-class Player(object):
-    """
-    Abstract class. Instance subclasses HumanPlayer or ComputerPlayer instead.
-    """
-    def __init__(self, number):
-        pass
-    def take_guess(self):
-        """
-        Make the player take a guess.
-        Return a valid guess.
-        """
-        raise NotImplementedError
-
-class HumanPlayer(object):
-    def take_guess(self):
-        pass
-
-class ComputerPlayer(object):
-    def take_guess(self):
-        pass
-    """
-    Plus a few private methods that call the appropiate AI functions.
-    """
-
-class HiddenNumber(object):
-    def __init__(self, num_digits: int, possible_digits):
-        """
-        Generate a random number according to the given constraints.
-        num_digits: length of the hidden number.
-        possible_digits: an iterable object.
-        """
-        list.append()
-        pass
-    def get_matches(self, number):
-        """
-        Return a tuple (number of bulls, number of cows)
-        """
-        pass
+import random
 
 class Settings(object):
     """
@@ -52,6 +15,73 @@ class Settings(object):
         self.hid_num_cons = hid_num_length, possible_digits
         self.max_turns = max_turns
         self.collate = collate
+
+class Player(object):
+    """
+    Abstract class. Instance subclasses HumanPlayer or ComputerPlayer instead.
+    """
+    def __init__(self, number):
+        pass
+    def take_guess(self, settings: Settings):
+        """
+        Make the player take a guess.
+        Return a valid guess.
+        """
+        raise NotImplementedError
+
+class HumanPlayer(object):
+    def take_guess(self, settings: Settings):
+        ...
+        
+
+class ComputerPlayer(object):
+    def take_guess(self, settings: Settings):
+        pass
+    """
+    Plus a few private methods that call the appropiate AI functions.
+    """
+
+class HiddenNumber(object):
+    def __init__(self, num_digits: int, possible_digits):
+        """
+        Generate a random number according to the given constraints.
+        num_digits: length of the hidden number.
+        possible_digits: list of all possible digits that the hidden number
+        can be made of
+        """        
+        if len(possible_digits) < num_digits:
+            raise ValueError("Couldn't build the hidden number."\
+                             +"Too few possible digits given.")
+
+        # Used [:] instead of list.copy() because possible digits
+        self._hidden_number = random.shuffle(possible_digits[:])[:num_digits]
+
+    def get_matches(self, guess: list):
+        """
+        Return a tuple (number of bulls, number of cows)
+        """
+        bulls, cows = 0, 0
+        for digit in guess:
+            if digit in self._hidden_number:
+                if guess.index(digit) == self._hidden_number.index(digit):
+                    bulls += 1
+                else:
+                    cows += 1
+        return bulls, cows
+
+def is_guess_valid(settings: Settings, guess: list):
+    
+    num_digits = settings.hid_num_cons[0]
+    possible_digits = settings.hid_num_cons[1]
+    
+    if len(guess) != num_digits:
+        return False
+    
+    for digit in guess:
+        if digit not in possible_digits:
+            return False
+    
+    return True
 
 class Game(object):
     """
