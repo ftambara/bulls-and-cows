@@ -4,22 +4,9 @@ This module contains the main game logic
 """
 
 import random
-import interface
 
-class Settings(object):
-    """
-    Note: Will be moved to settings.py once settings start being developed
-    """
-    def __init__(self, max_points, hid_num_length, possible_digits,
-                 max_turns, collate=False):
-        self.max_points = max_points
-        
-        self.hid_num_cons = hid_num_length, list(possible_digits)
-        self.hid_num_len = hid_num_length
-        self.possible_digits = list(possible_digits)
-        
-        self.max_turns = max_turns
-        self.collate = collate
+import interface
+import settings as st
 
 class Player(object):
     """
@@ -30,14 +17,14 @@ class Player(object):
         self._id = Player.id
         Player.id += 1
         
-    def take_guess(self, settings: Settings):
+    def take_guess(self, settings: st.Settings):
         """
         Abstract method, to be implemented by subclasses.
         """
         raise NotImplementedError
 
 class HumanPlayer(object):
-    def take_guess(self, settings: Settings):
+    def take_guess(self, settings: st.Settings):
         """
         Make the player take a guess.
         Return a valid guess.
@@ -46,7 +33,7 @@ class HumanPlayer(object):
         
 
 class ComputerPlayer(object):
-    def take_guess(self, settings: Settings):
+    def take_guess(self, settings: st.Settings):
         pass
     """
     Plus a few private methods that call the appropiate AI functions.
@@ -81,7 +68,7 @@ class HiddenNumber(object):
                     cows += 1
         return bulls, cows
 
-def is_guess_valid(settings: Settings, guess: list):
+def is_guess_valid(settings: st.Settings, guess: list):
     
     num_digits = settings.hid_num_cons[0]
     possible_digits = settings.hid_num_cons[1]
@@ -96,7 +83,7 @@ def is_guess_valid(settings: Settings, guess: list):
     return True
 
 class Logic(object):
-    def __init__(self, players: list[Player], settings: Settings):
+    def __init__(self, players: list[Player], settings: st.Settings):
         self._scores = {player:0 for player in players}
         self._settings = settings
         self._game_done = False

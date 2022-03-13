@@ -46,7 +46,7 @@ def _main_menu():
         print(f"[{options_dict[opt]}] {opt}")
     
     while True:
-        command = input()
+        command = input("[_]\b\b")
         if command not in commands_dict:
             print("Unrecognized option. Choose one from the commands "\
                   +"in brakects.")
