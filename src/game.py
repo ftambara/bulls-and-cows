@@ -4,6 +4,7 @@ This module contains the main game logic
 """
 
 import random
+import interface
 
 class Settings(object):
     """
@@ -12,7 +13,11 @@ class Settings(object):
     def __init__(self, max_points, hid_num_length, possible_digits,
                  max_turns, collate=False):
         self.max_points = max_points
-        self.hid_num_cons = hid_num_length, possible_digits
+        
+        self.hid_num_cons = hid_num_length, list(possible_digits)
+        self.hid_num_len = hid_num_length
+        self.possible_digits = list(possible_digits)
+        
         self.max_turns = max_turns
         self.collate = collate
 
@@ -20,18 +25,24 @@ class Player(object):
     """
     Abstract class. Instance subclasses HumanPlayer or ComputerPlayer instead.
     """
-    def __init__(self, number):
-        pass
+    id = 0
+    def __init__(self):
+        self._id = Player.id
+        Player.id += 1
+        
     def take_guess(self, settings: Settings):
         """
-        Make the player take a guess.
-        Return a valid guess.
+        Abstract method, to be implemented by subclasses.
         """
         raise NotImplementedError
 
 class HumanPlayer(object):
     def take_guess(self, settings: Settings):
-        ...
+        """
+        Make the player take a guess.
+        Return a valid guess.
+        """
+        return interface.human_take_guess(settings.possible_digits)
         
 
 class ComputerPlayer(object):
@@ -58,6 +69,7 @@ class HiddenNumber(object):
 
     def get_matches(self, guess: list):
         """
+        Assumes guess is valid
         Return a tuple (number of bulls, number of cows)
         """
         bulls, cows = 0, 0
@@ -83,11 +95,7 @@ def is_guess_valid(settings: Settings, guess: list):
     
     return True
 
-class Game(object):
-    """
-    Keep track of number of players. Calls each round. 
-    Track score. Detects end game condition. Announces winner.
-    """
+class Logic(object):
     def __init__(self, players: list[Player], settings: Settings):
         self._scores = {player:0 for player in players}
         self._settings = settings
@@ -97,7 +105,6 @@ class Game(object):
     def start_game(self):
         """
         Execute a full game.
-        Return dict of players and their final scores.
         """
         while self._game_done is False:
             self._play_round()
@@ -109,8 +116,6 @@ class Game(object):
                     if keep_going == 2:
                         # At least 2 people aren't done yet, game is not done
                         self._game_done = False
-        
-        return self._players
 
     def _play_round(self):
         """
