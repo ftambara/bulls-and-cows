@@ -10,10 +10,32 @@ interface.py functions are the intended clients.
 
 import logic
 import settings as st
+import player
 
-settings = st.Settings()
+_settings = st.Settings()
+
 # Who should handle the players initialization and action execution?
-game = logic.Logic()
 
-def _initiate_game():
-    game.start_game()
+def update_game_mode(game_mode):
+    _settings.set_game_mode(game_mode)
+
+def update_human_players(num):
+    _settings.set_human_players(num)
+
+def update_computer_player(bool_):
+    _settings.set_computer_player(bool_)
+
+def _load_default_settings():
+    update_game_mode("Normal")
+    update_human_players(2)
+    update_computer_player(False)
+
+def _gen_player_list():
+    return [player.HumanPlayer() for _ in range(_settings.num_human_players)]\
+        +([player.ComputerPlayer()] if _settings.computer_player else [])
+
+def initiate_game():
+    _load_default_settings()
+    players = _gen_player_list()
+    _game = logic.Logic(players, _settings)
+    _game.start_game()

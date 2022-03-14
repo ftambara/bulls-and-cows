@@ -5,25 +5,35 @@
 """
 _GAME_MODES = {
     # Game_mode: (max_points, num_len, possible_digits, max_turns)
-    "Pointless": (30, 5, list(range(0, 9+1))+list('ABCDEF'), 10),
-    "Focused": (30, 5, list(range(0, 9+1)), 7),
-    "Normal": (30, 5, list(range(0, 9+1)), 10),
-    "Quick": (10, 5, list(range(1, 4+1)), 5),
+    "Pointless": (30, 5, list('0123456789')+list('ABCDEF'), 10),
+    "Focused": (30, 4, list('0123456789'), 7),
+    "Normal": (30, 4, list('0123456789'), 10),
+    "Quick": (10, 3, list('012345'), 5),
 
 }
 
 class Settings(object):
-    def __init__(self, game_mode="Normal"):
-        self.set_game_mode()
-    def set_game_mode(self, max_points, hid_num_length, possible_digits,
-                      max_turns):
-        self.max_points = max_points
+    def __init__(self):
+        self.collate = False
+
+    def set_human_players(self, num_human_players: int):
+        self.num_human_players = num_human_players
+
+    def set_computer_player(self, computer_player: bool):
+        self.computer_player = computer_player
+
+    def set_game_mode(self, mode):
+        mp, num_len, digits, turns = _GAME_MODES[mode]
+        self.max_points = mp
         
-        self.hid_num_cons = hid_num_length, list(possible_digits)
-        self.hid_num_len = hid_num_length
-        self.possible_digits = list(possible_digits)
+        self.hid_num_cons = num_len, list(digits)
+        self.hid_num_len = num_len
+        self.possible_digits = list(digits)
         
-        self.max_turns = max_turns
+        self.max_turns = turns
+
+    def _get_round_score(self, num_turns, guessed=True):
+        return num_turns if guessed else int(self.max_turns*1.5)
 
 def set_game_mode(settings: Settings, mode: str = "Normal"):
     """

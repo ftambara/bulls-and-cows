@@ -7,37 +7,7 @@ import random
 
 import interface
 import settings as st
-
-class Player(object):
-    """
-    Abstract class. Instance subclasses HumanPlayer or ComputerPlayer instead.
-    """
-    id = 0
-    def __init__(self):
-        self._id = Player.id
-        Player.id += 1
-        
-    def take_guess(self, settings: st.Settings):
-        """
-        Abstract method, to be implemented by subclasses.
-        """
-        raise NotImplementedError
-
-class HumanPlayer(object):
-    def take_guess(self, settings: st.Settings):
-        """
-        Make the player take a guess.
-        Return a valid guess.
-        """
-        return interface.human_take_guess(settings.possible_digits)
-        
-
-class ComputerPlayer(object):
-    def take_guess(self, settings: st.Settings):
-        pass
-    """
-    Plus a few private methods that call the appropiate AI functions.
-    """
+import player
 
 class HiddenNumber(object):
     def __init__(self, num_digits: int, possible_digits):
@@ -52,7 +22,9 @@ class HiddenNumber(object):
                              +"Too few possible digits given.")
 
         # Used [:] instead of list.copy() because possible digits
-        self._hidden_number = random.shuffle(possible_digits[:])[:num_digits]
+        self._hidden_number = random.sample(possible_digits, num_digits)
+        
+        print("hidden", self._hidden_number, end="\n\n") #TODO delete
 
     def get_matches(self, guess: list):
         """
@@ -67,6 +39,9 @@ class HiddenNumber(object):
                 else:
                     cows += 1
         return bulls, cows
+
+    def reveal(self):
+        return self._hidden_number
 
 def is_guess_valid(settings: st.Settings, guess: list):
     
@@ -83,7 +58,7 @@ def is_guess_valid(settings: st.Settings, guess: list):
     return True
 
 class Logic(object):
-    def __init__(self, players: list[Player], settings: st.Settings):
+    def __init__(self, players: list[player.Player], settings: st.Settings):
         self._scores = {player:0 for player in players}
         self._settings = settings
         self._game_done = False
@@ -95,9 +70,11 @@ class Logic(object):
         """
         while self._game_done is False:
             self._play_round()
+            interface.show_final_end_round_data(self._scores, 
+                self._settings.max_points)
             self._game_done = True
             keep_going = 0
-            for s in self._scores:
+            for s in self._scores.values():
                 if s < self._settings.max_points:
                     keep_going += 1
                     if keep_going == 2:
@@ -110,13 +87,16 @@ class Logic(object):
         Update players dict with obtained scores.
         """
 
-        keep_going = [p for p,s in self._scores 
+        num_digits = self._settings.hid_num_len
+        possible_digits = self._settings.possible_digits
+        
+        keep_going = [p for p,s in self._scores.items() 
                         if s < self._settings.max_points]
 
         # Generate a hidden number per player
         hidden_numbers = {}
         for player in keep_going:
-            hidden_numbers[player] = HiddenNumber(*self._settings.hid_num_cons)
+            hidden_numbers[player] = HiddenNumber(num_digits, possible_digits)
 
         # TODO Code reuse, check abstraction levels
         
@@ -129,22 +109,26 @@ class Logic(object):
                 keep_going_this_round = keep_going[:]
                 ... # TODO Visual feedback turn number
                 for player in keep_going_this_round:
-                    guess = player.take_guess()
+                    interface.show_active_player(player)
+                    interface.show_turn(turn_num)
+                    guess = player.take_guess(self._settings)
                     bulls, cows = hidden_numbers[player].get_matches(guess)
-                    ...    # TODO Give visual feedback: bulls, cows
-                    if bulls == self._settings.hid_num_cons[0]:   # TODO legibility
+                    interface.guess_result(bulls, cows)
+
+                    if bulls == self._settings.hid_num_len:
                         # Hidden number discovered
                         del keep_going[player]
-                        score = self._get_round_score(turn_num)
+                        score = self._settings._get_round_score(turn_num)
                         self._scores[player] += score
-                        ...    # TODO Visual feedback: You guessed right
-                        ... # TODO Visual feedback: Show score
+                        interface.show_partial_end_round_data(score, 
+                            hidden_numbers[player].reveal, guessed=True)
                     elif turn_num+1 > self._settings.max_turns:
                         # Time is up
-                        score = self._get_round_score(turn_num, guessed=False)
+                        score = self._settings._get_round_score(turn_num, 
+                            guessed=False)
                         self._scores[player] += score
-                        ...    # TODO Visual feedback: time is up                    
-                        ... # TODO Visual feedback: Show score
+                        interface.show_partial_end_round_data(score, 
+                            hidden_numbers[player].reveal, guessed=False)
 
                 turn_num += 1
                 if turn_num > self._settings.max_turns:
@@ -152,27 +136,30 @@ class Logic(object):
             return
         else:
             for player in keep_going:
+                interface.show_active_player(player)
                 turn_num = 1
                 round_is_done = False
                 while round_is_done == False:
-                    ... # TODO Visual feedback turn number
-                    guess = player.take_guess()
+                    interface.show_turn(turn_num)
+                    guess = player.take_guess(self._settings)
                     bulls, cows = hidden_numbers[player].get_matches(guess)
-                    ...    # TODO Give visual feedback: bulls, cows
-                    if bulls == self._settings.hid_num_cons[0]:   # TODO legibility
+                    interface.guess_result(bulls, cows)
+
+                    if bulls == self._settings.hid_num_len:
                         # Hidden number discovered
-                        score = self._get_round_score(turn_num)
-                        ...    # TODO Visual feedback: You guessed right
+                        score = self._settings._get_round_score(turn_num)
+                        round_is_done = True
+                        interface.show_partial_end_round_data(score, 
+                            hidden_numbers[player].reveal, guessed=True)
+
                     elif turn_num+1 > self._settings.max_turns:
                         # Time is up
                         round_is_done = True
-                        score = self._get_round_score(turn_num, guessed=False)
-                        ...    # TODO Visual feedback: time is up
+                        score = self._settings._get_round_score(turn_num,
+                            guessed=False)
+                        interface.show_partial_end_round_data(score, 
+                            hidden_numbers[player].reveal, guessed=False)
                     
                     turn_num += 1
                 self._scores[player] += score
                 ... # TODO Visual feedback: Show score
-
-    def _get_round_score(self, num_turns, guessed=True):
-        # TODO move it to settings/game mode object
-        return ...
