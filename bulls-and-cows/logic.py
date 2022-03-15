@@ -117,18 +117,19 @@ class Logic(object):
 
                     if bulls == self._settings.hid_num_len:
                         # Hidden number discovered
-                        del keep_going[player]
+                        keep_going.remove(player)
                         score = self._settings._get_round_score(turn_num)
                         self._scores[player] += score
                         interface.show_partial_end_round_data(score, 
-                            hidden_numbers[player].reveal, guessed=True)
+                            guessed=True)
                     elif turn_num+1 > self._settings.max_turns:
                         # Time is up
                         score = self._settings._get_round_score(turn_num, 
                             guessed=False)
                         self._scores[player] += score
                         interface.show_partial_end_round_data(score, 
-                            hidden_numbers[player].reveal, guessed=False)
+                            guessed=False,
+                            hidden_num=hidden_numbers[player].reveal())
 
                 turn_num += 1
                 if turn_num > self._settings.max_turns:
@@ -150,7 +151,7 @@ class Logic(object):
                         score = self._settings._get_round_score(turn_num)
                         round_is_done = True
                         interface.show_partial_end_round_data(score, 
-                            hidden_numbers[player].reveal, guessed=True)
+                            guessed=True)
 
                     elif turn_num+1 > self._settings.max_turns:
                         # Time is up
@@ -158,7 +159,8 @@ class Logic(object):
                         score = self._settings._get_round_score(turn_num,
                             guessed=False)
                         interface.show_partial_end_round_data(score, 
-                            hidden_numbers[player].reveal, guessed=False)
+                            guessed=False,
+                            hidden_num=hidden_numbers[player].reveal())
                     
                     turn_num += 1
                 self._scores[player] += score

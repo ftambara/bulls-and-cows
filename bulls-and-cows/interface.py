@@ -28,7 +28,7 @@ def start_screen():
     """
     Welcome user, launch main menu.
     """
-    _clear_screen()
+    _clear_screen(wait=False)
     print("Welcome to the Bulls n' Cows game.\n\n")
     _main_menu()
 
@@ -45,35 +45,38 @@ def _main_menu():
 
     commands_dict = {comm:opt for (opt, comm) in options_dict.items()}
 
-    # Use _MENU_OPTIONS to keep intended order
-    for opt in _MENU_OPTIONS + ["Quit"]:
-        print(f"[{options_dict[opt]}] {opt}")
-    
     while True:
-        command = input("\n[_]\b\b")
-        if command not in commands_dict:
-            print("Unrecognized option. Choose one from the commands "\
-                  +"in brakects.")
-            continue
-        else:
-            break
+        # Use _MENU_OPTIONS to keep intended order
+        for opt in _MENU_OPTIONS + ["Quit"]:
+            print(f"[{options_dict[opt]}] {opt}")
+        
+        while True:
+            command = input("\n[_]\b\b")
+            if command not in commands_dict:
+                print("Unrecognized option. Choose one of the commands "\
+                    +"in brackets.")
+                continue
+            else:
+                break
 
-    option = commands_dict[command]
-    print("Option:", option)
+        option = commands_dict[command]
+        print("Option:", option)
 
-    match option:
-        case "Quit":
-            ...
-        case "Start game":
-            _clear_screen()
-            controller.initiate_game()
-            _end_game_screen()
-        case "Settings":
-            ...
-        case "Instructions":
-            ...
-        case "About":
-            ...
+        match option:
+            case "Quit":
+                _quit_screen()
+                _clear_screen()
+                break
+            case "Start game":
+                _clear_screen()
+                controller.initiate_game()
+                _end_game_screen()
+            case "Settings":
+                ...
+            case "Instructions":
+                ...
+            case "About":
+                ...
 
 def _instructions_screen():
     """Show game instructions to the user"""
@@ -91,6 +94,9 @@ def _other_settings_menu():
 
 def _about_screen():
     """Show information about the project"""
+
+def _quit_screen():
+    print("\nGoodbye!")
 
 def _clear_screen(wait=True):
     import os
@@ -136,7 +142,7 @@ def guess_result(bulls, cows):
 def show_active_player(player_: player.Player):
     print(player_)
 
-def show_partial_end_round_data(score, hidden_num, guessed):
+def show_partial_end_round_data(score, guessed, hidden_num=None):
     if not guessed:
         print(f"You didn't make it. The number was {hidden_num}.")
     else:
