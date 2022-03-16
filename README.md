@@ -4,7 +4,7 @@ A slight variation of the bulls and cows game, numerical version. Terminal based
 
 ## Task list
 - [x] Write initial specs
-- [ ] Basic functionality with terminal interface
+- [x] Basic functionality with terminal interface
 - [ ] Computer player
 - [ ] Game modes
 - [ ] (Optional) Improved GUI
