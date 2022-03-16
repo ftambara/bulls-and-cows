@@ -139,6 +139,8 @@ def _end_game_screen(scores):
     p, s = scores[0]
     print(f"WINNER: {p} with {s} points.")
     for p, s in scores[1:]:
+        if s == scores[0][1]:
+            print("TIE WITH: ", end="") #TODO improve tied match messages
         print(f"{p} score: {s}")
     
     print("\nWell played!")
@@ -190,6 +192,7 @@ def show_final_end_round_data(scores: dict, max_score: int):
             print(f"\n{p}: {s}.")
         else:
             print(f"\n{p}: {s}. OUT!")
+    print("\n")
 
 def show_turn(turn_num):
     print(f"Turn {turn_num}")

@@ -14,7 +14,10 @@ import player
 
 _settings = st.Settings()
 
-# Who should handle the players initialization and action execution?
+def _gen_player_list():
+    return [player.HumanPlayer() for _ in range(_settings.num_human_players)]\
+        +([player.ComputerPlayer()] if _settings.computer_player else [])
+
 
 def update_game_mode(game_mode):
     _settings.set_game_mode(game_mode)
@@ -30,13 +33,11 @@ def _load_default_settings():
     update_human_players(2)
     update_computer_player(False)
 
-def _gen_player_list():
-    return [player.HumanPlayer() for _ in range(_settings.num_human_players)]\
-        +([player.ComputerPlayer()] if _settings.computer_player else [])
+
+_load_default_settings()
+_players = _gen_player_list()
 
 def initiate_game():
-    _load_default_settings()
-    players = _gen_player_list()
-    _game = logic.Logic(players, _settings)
+    _game = logic.Logic(_players, _settings)
     _game.start_game()
     return _game.get_scores()

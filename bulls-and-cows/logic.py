@@ -23,8 +23,6 @@ class HiddenNumber(object):
 
         # Used [:] instead of list.copy() because possible digits
         self._hidden_number = random.sample(possible_digits, num_digits)
-        
-        print("hidden", self._hidden_number, end="\n\n") #TODO delete
 
     def get_matches(self, guess: list):
         """
@@ -107,7 +105,6 @@ class Logic(object):
             turn_num = 1
             while round_is_done is False and len(keep_going) > 0:
                 keep_going_this_round = keep_going[:]
-                ... # TODO Visual feedback turn number
                 for player in keep_going_this_round:
                     interface.show_active_player(player)
                     interface.show_turn(turn_num)
@@ -164,7 +161,6 @@ class Logic(object):
                     
                     turn_num += 1
                 self._scores[player] += score
-                ... # TODO Visual feedback: Show score
 
     def get_scores(self):
         return sorted(self._scores.items(), key=lambda x: x[1])
