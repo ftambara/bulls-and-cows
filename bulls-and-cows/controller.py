@@ -39,3 +39,4 @@ def initiate_game():
     players = _gen_player_list()
     _game = logic.Logic(players, _settings)
     _game.start_game()
+    return _game.get_scores()

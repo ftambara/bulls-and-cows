@@ -165,3 +165,6 @@ class Logic(object):
                     turn_num += 1
                 self._scores[player] += score
                 ... # TODO Visual feedback: Show score
+
+    def get_scores(self):
+        return sorted(self._scores.items(), key=lambda x: x[1])

@@ -7,7 +7,7 @@ _GAME_MODES = {
     # Game_mode: (max_points, num_len, possible_digits, max_turns)
     "Pointless": (30, 5, list('0123456789')+list('ABCDEF'), 10),
     "Focused": (30, 4, list('0123456789'), 7),
-    "Normal": (30, 4, list('0123456789'), 10),
+    "Normal": (4, 4, list('0123456789'), 2),
     "Quick": (10, 3, list('012345'), 5),
 
 }

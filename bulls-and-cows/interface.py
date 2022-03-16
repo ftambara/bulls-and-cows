@@ -7,6 +7,7 @@ game.py objects are the intended clients.
 import controller
 import player
 import time
+import settings
 
 """
 _MENU_OPTIONS
@@ -22,13 +23,11 @@ _MENU_OPTIONS = [
     "About",
 ]
 
-_WAIT_BETWEEN_SCREENS = 1    # in seconds
-
 def start_screen():
     """
     Welcome user, launch main menu.
     """
-    _clear_screen(wait=False)
+    _clear_screen(wait=0)
     print("Welcome to the Bulls n' Cows game.\n\n")
     _main_menu()
 
@@ -47,6 +46,7 @@ def _main_menu():
 
     while True:
         # Use _MENU_OPTIONS to keep intended order
+        print("\n")
         for opt in _MENU_OPTIONS + ["Quit"]:
             print(f"[{options_dict[opt]}] {opt}")
         
@@ -69,22 +69,41 @@ def _main_menu():
                 break
             case "Start game":
                 _clear_screen()
-                controller.initiate_game()
-                _end_game_screen()
+                scores = controller.initiate_game()
+                _clear_screen()
+                _end_game_screen(scores)
             case "Settings":
-                ...
+                _clear_screen()
+                _settings_screen()
             case "Instructions":
-                ...
+                _clear_screen()
+                _instructions_screen()
             case "About":
-                ...
+                _clear_screen()
+                _about_screen()
 
 def _instructions_screen():
     """Show game instructions to the user"""
-    ...
+
+    print("- The game can be player against the machine, or by any number of "\
+         +"human players plus one optional computer player.")
+    print("- In the first turn of every round, the machine generates a "\
+         +"hidden number for each player. The player tries to guess it. Once "\
+         +"the guess is sent, the machine returns the number of bulls "\
+         +"(digits present in the hidden number in the exact same position) "\
+         +"and the number of cows (digits present in the hidden number in a "\
+         +"different position).")
+    print("- The players keeps taking turns until they either discover their "\
+         +"number or exhaust the number of turns for that round (10 turns in "\
+         +"most game modes)")
+    print("\n")
 
 def _settings_screen():
     """Allow the user to configure the game."""
-    ... # Feature idea: Store last settings
+    
+    print("Customization coming soon.\n"
+         +"Only default settings available for now.")
+    print("That means 2 players and normal difficulty.")
 
 def _game_mode_menu():
     ...
@@ -94,25 +113,36 @@ def _other_settings_menu():
 
 def _about_screen():
     """Show information about the project"""
+    print("I made this project with the intention of practicing some "\
+         +"programming concepts- basic OOP and dealing with project size."\
+         +"deal with project size.\n"
+         +"My two main takeways are:\n"\
+         +"   - Do less things at a time, keep feature adding under control.\n"\
+         +"   - Try hard to get the object interaction right. Having a clear "\
+         +"idea of how the objects should interact and who is responsible of "\
+         +"what makes all the difference")
 
 def _quit_screen():
     print("\nGoodbye!")
 
-def _clear_screen(wait=True):
+def _clear_screen(wait=1):
     import os
     
-    if wait:
-        time.sleep(_WAIT_BETWEEN_SCREENS)
+    time.sleep(wait)
 
     if os.name == "nt":
         os.system('cls')
     else:
         os.system('clear')
 
-def _end_game_screen():
-    ...    # Announce winner, show leaderboard
-    ...    # Call function from control.py to store leaderboard
-
+def _end_game_screen(scores):
+    p, s = scores[0]
+    print(f"WINNER: {p} with {s} points.")
+    for p, s in scores[1:]:
+        print(f"{p} score: {s}")
+    
+    print("\nWell played!")
+    
 
 def human_take_guess(num_len, possible_digits):
     while True:
